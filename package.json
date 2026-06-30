@@ -1,0 +1,20 @@
+{
+  "name": "event_ease_backend",
+  "version": "1.0.0",
+  "description": "This is the backend of my event_ease website",
+  "homepage": "https://github.com/Karan9389/Event_Ease_Backend#readme",
+  "bugs": {
+    "url": "https://github.com/Karan9389/Event_Ease_Backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Karan9389/Event_Ease_Backend.git"
+  },
+  "license": "ISC",
+  "author": "Karan Kumar",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
