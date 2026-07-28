@@ -19,6 +19,18 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
     },
+    cart: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Service",
+      },
+    ],
+    wishlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Service",
+      },
+    ],
   },
   { timestamps: true }
 );
