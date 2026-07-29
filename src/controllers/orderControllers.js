@@ -1,6 +1,7 @@
 const Order = require("../models/Order");
 const User = require("../models/User");
 const Service = require("../models/Service");
+const mongoose = require("mongoose");
 
 exports.createOrder = async (req, res) => {
   try {
@@ -8,13 +9,19 @@ exports.createOrder = async (req, res) => {
 
     let orderItems = [];
     if (items && Array.isArray(items) && items.length > 0) {
-      orderItems = items.map((item) => ({
-        service: item.id || item._id,
-        name: item.name,
-        category: item.category,
-        price: item.price,
-        image: item.image || "",
-      }));
+      orderItems = items.map((item) => {
+        const rawId = item.id || item._id;
+        const serviceId = mongoose.Types.ObjectId.isValid(rawId)
+          ? rawId
+          : new mongoose.Types.ObjectId();
+        return {
+          service: serviceId,
+          name: item.name,
+          category: item.category,
+          price: item.price,
+          image: item.image || "",
+        };
+      });
     } else {
       // If items not sent, fetch from user's current cart
       const user = await User.findById(req.user._id).populate("cart");

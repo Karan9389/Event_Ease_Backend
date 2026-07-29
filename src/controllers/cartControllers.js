@@ -42,7 +42,8 @@ exports.addToCart = async (req, res) => {
     }
 
     const user = await User.findById(req.user._id);
-    if (!user.cart.includes(service._id)) {
+    const exists = user.cart.some((id) => id.toString() === service._id.toString());
+    if (!exists) {
       user.cart.push(service._id);
       await user.save();
     }

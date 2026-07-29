@@ -2,6 +2,21 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
+const formatService = (s) => (s && s._id ? {
+  id: s._id.toString(),
+  _id: s._id,
+  name: s.name,
+  category: s.category,
+  description: s.description,
+  price: s.price,
+  originalPrice: s.originalPrice,
+  priceUnit: s.priceUnit,
+  rating: s.rating,
+  reviewCount: s.reviewCount,
+  image: s.image,
+  tags: s.tags,
+} : s);
+
 const createToken = (user) => {
   return jwt.sign({ id: user._id }, process.env.JWT_SECRET || "eventease_secret", {
     expiresIn: "7d",
@@ -63,8 +78,8 @@ exports.login = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        cart: user.cart || [],
-        wishlist: user.wishlist || [],
+        cart: (user.cart || []).map(formatService).filter(Boolean),
+        wishlist: (user.wishlist || []).map(formatService).filter(Boolean),
       },
     });
   } catch (error) {
@@ -83,8 +98,8 @@ exports.getMe = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        cart: user.cart || [],
-        wishlist: user.wishlist || [],
+        cart: (user.cart || []).map(formatService).filter(Boolean),
+        wishlist: (user.wishlist || []).map(formatService).filter(Boolean),
       },
     });
   } catch (error) {

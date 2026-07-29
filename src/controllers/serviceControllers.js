@@ -2,17 +2,21 @@ const Service = require("../models/Service");
 
 exports.getServices = async (req, res) => {
   try {
-    const { category, q } = req.query;
+    const { category, q, location } = req.query;
 
     const filter = {};
     if (category) {
       filter.category = String(category).toLowerCase();
+    }
+    if (location) {
+      filter.location = { $regex: location, $options: "i" };
     }
     if (q) {
       filter.$or = [
         { name: { $regex: q, $options: "i" } },
         { description: { $regex: q, $options: "i" } },
         { tags: { $regex: q, $options: "i" } },
+        { location: { $regex: q, $options: "i" } },
       ];
     }
 
