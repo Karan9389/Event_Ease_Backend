@@ -2,23 +2,28 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-const formatService = (s) => (s && s._id ? {
-  id: s._id.toString(),
-  _id: s._id,
-  name: s.name,
-  category: s.category,
-  description: s.description,
-  price: s.price,
-  originalPrice: s.originalPrice,
-  priceUnit: s.priceUnit,
-  rating: s.rating,
-  reviewCount: s.reviewCount,
-  image: s.image,
-  tags: s.tags,
-} : s);
+const JWT_SECRET = process.env.JWT_SECRET || "eventease_dev_secret";
+
+const formatService = (s) =>
+  s && s._id
+    ? {
+        id: s._id.toString(),
+        _id: s._id,
+        name: s.name,
+        category: s.category,
+        description: s.description,
+        price: s.price,
+        originalPrice: s.originalPrice,
+        priceUnit: s.priceUnit,
+        rating: s.rating,
+        reviewCount: s.reviewCount,
+        image: s.image,
+        tags: s.tags,
+      }
+    : s;
 
 const createToken = (user) => {
-  return jwt.sign({ id: user._id }, process.env.JWT_SECRET || "eventease_secret", {
+  return jwt.sign({ id: user._id }, JWT_SECRET, {
     expiresIn: "7d",
   });
 };

@@ -1,5 +1,10 @@
 const Service = require("../models/Service");
 
+// Escape regex metacharacters to avoid ReDoS and unintended patterns
+function escapeRegex(str) {
+  return String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 exports.getServices = async (req, res) => {
   try {
     const { category, q, location } = req.query;
@@ -9,14 +14,14 @@ exports.getServices = async (req, res) => {
       filter.category = String(category).toLowerCase();
     }
     if (location) {
-      filter.location = { $regex: location, $options: "i" };
+      filter.location = { $regex: escapeRegex(location), $options: "i" };
     }
     if (q) {
       filter.$or = [
-        { name: { $regex: q, $options: "i" } },
-        { description: { $regex: q, $options: "i" } },
-        { tags: { $regex: q, $options: "i" } },
-        { location: { $regex: q, $options: "i" } },
+        { name: { $regex: escapeRegex(q), $options: "i" } },
+        { description: { $regex: escapeRegex(q), $options: "i" } },
+        { tags: { $regex: escapeRegex(q), $options: "i" } },
+        { location: { $regex: escapeRegex(q), $options: "i" } },
       ];
     }
 
@@ -93,21 +98,42 @@ exports.createService = async (req, res) => {
       featured,
     } = req.body;
 
+    // Basic validation and sanitization
     if (!name || !category || !description || price === undefined) {
       return res.status(400).json({ message: "Name, category, description, and price are required" });
     }
+
+    if (typeof name !== "string" || name.trim().length < 2) {
+      return res.status(400).json({ message: "Invalid name" });
+    }
+
+    const allowedCategories = ["photography", "catering", "music", "makeup"];
+    if (!allowedCategories.includes(String(category).toLowerCase())) {
+      return res.status(400).json({ message: "Invalid category" });
+    }
+
+    if (typeof description !== "string" || description.trim().length < 10) {
+      return res.status(400).json({ message: "Description must be at least 10 characters" });
+    }
+
+    const numericPrice = Number(price);
+    if (Number.isNaN(numericPrice) || numericPrice < 0) {
+      return res.status(400).json({ message: "Invalid price" });
+    }
+
+    const safeTags = Array.isArray(tags) ? tags.map((t) => String(t).trim()).filter(Boolean) : [];
 
     const service = await Service.create({
       name,
       category: String(category).toLowerCase(),
       description,
-      price,
+      price: numericPrice,
       originalPrice,
       priceUnit,
       rating,
       reviewCount,
       image,
-      tags,
+      tags: safeTags,
       location,
       availability,
       featured,

@@ -15,6 +15,11 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Warn when JWT_SECRET is not configured. In production, set this to a strong secret.
+if (!process.env.JWT_SECRET) {
+  console.warn("WARNING: JWT_SECRET is not set. Using a development fallback is insecure in production.");
+}
+
 app.get("/", (req, res) => {
   res.json({ message: "Event Ease backend is running" });
 });
