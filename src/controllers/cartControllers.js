@@ -25,7 +25,8 @@ exports.getCart = async (req, res) => {
     const cart = (user.cart || []).map(formatService);
     res.status(200).json(cart);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch cart", error: error.message });
+    const errorResponse = require("../lib/errorResponse");
+    return errorResponse(res, "Failed to fetch cart", error, 500);
   }
 };
 
@@ -52,7 +53,8 @@ exports.addToCart = async (req, res) => {
     const cart = (updatedUser.cart || []).map(formatService);
     res.status(200).json({ message: "Added to cart", cart });
   } catch (error) {
-    res.status(500).json({ message: "Failed to add to cart", error: error.message });
+    const errorResponse = require("../lib/errorResponse");
+    return errorResponse(res, "Failed to add to cart", error, 500);
   }
 };
 
@@ -68,7 +70,8 @@ exports.removeFromCart = async (req, res) => {
     const cart = (updatedUser.cart || []).map(formatService);
     res.status(200).json({ message: "Removed from cart", cart });
   } catch (error) {
-    res.status(500).json({ message: "Failed to remove from cart", error: error.message });
+    const errorResponse = require("../lib/errorResponse");
+    return errorResponse(res, "Failed to remove from cart", error, 500);
   }
 };
 
@@ -79,6 +82,7 @@ exports.clearCart = async (req, res) => {
     await user.save();
     res.status(200).json({ message: "Cart cleared", cart: [] });
   } catch (error) {
-    res.status(500).json({ message: "Failed to clear cart", error: error.message });
+    const errorResponse = require("../lib/errorResponse");
+    return errorResponse(res, "Failed to clear cart", error, 500);
   }
 };

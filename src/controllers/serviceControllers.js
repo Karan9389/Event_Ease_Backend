@@ -48,7 +48,8 @@ exports.getServices = async (req, res) => {
 
     res.status(200).json(formattedServices);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch services", error: error.message });
+    const errorResponse = require("../lib/errorResponse");
+    return errorResponse(res, "Failed to fetch services", error, 500);
   }
 };
 
@@ -76,7 +77,8 @@ exports.getServiceById = async (req, res) => {
       featured: service.featured,
     });
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch service", error: error.message });
+    const errorResponse = require("../lib/errorResponse");
+    return errorResponse(res, "Failed to fetch service", error, 500);
   }
 };
 
@@ -141,6 +143,7 @@ exports.createService = async (req, res) => {
 
     res.status(201).json({ message: "Service created successfully", service });
   } catch (error) {
-    res.status(500).json({ message: "Failed to create service", error: error.message });
+    const errorResponse = require("../lib/errorResponse");
+    return errorResponse(res, "Failed to create service", error, 500);
   }
 };

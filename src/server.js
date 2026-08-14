@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const seedDatabase = require("./config/seed");
 
 const authRoutes = require("./routes/db/authRoute");
@@ -18,6 +20,30 @@ app.use(express.json());
 // Warn when JWT_SECRET is not configured. In production, set this to a strong secret.
 if (!process.env.JWT_SECRET) {
   console.warn("WARNING: JWT_SECRET is not set. Using a development fallback is insecure in production.");
+}
+
+// Security middleware
+app.use(helmet());
+
+// Rate limiter: conservative defaults
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use(limiter);
+
+// Restrict CORS origins in production via ALLOWED_ORIGINS env var (comma-separated)
+if (process.env.NODE_ENV === 'production' && process.env.ALLOWED_ORIGINS) {
+  const allowed = process.env.ALLOWED_ORIGINS.split(',').map((s) => s.trim());
+  app.use(cors({ origin: (origin, callback) => {
+    if (!origin || allowed.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed'));
+    }
+  }}));
 }
 
 app.get("/", (req, res) => {
@@ -40,4 +66,15 @@ mongoose
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+});
+
+// Centralized error handler to avoid leaking internal details
+const errorResponse = require("./lib/errorResponse");
+app.use((err, req, res, next) => {
+  if (!err) return next();
+  console.error(err);
+  if (err.message && err.message.includes('CORS')) {
+    return res.status(403).json({ message: 'CORS not allowed' });
+  }
+  return errorResponse(res, 'Internal server error', err, 500);
 });

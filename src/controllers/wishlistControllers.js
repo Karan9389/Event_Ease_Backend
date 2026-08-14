@@ -25,7 +25,8 @@ exports.getWishlist = async (req, res) => {
     const wishlist = (user.wishlist || []).map(formatService);
     res.status(200).json(wishlist);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch wishlist", error: error.message });
+    const errorResponse = require("../lib/errorResponse");
+    return errorResponse(res, "Failed to fetch wishlist", error, 500);
   }
 };
 
@@ -56,7 +57,8 @@ exports.toggleWishlist = async (req, res) => {
     const wishlist = (updatedUser.wishlist || []).map(formatService);
     res.status(200).json({ message: "Wishlist updated", wishlist });
   } catch (error) {
-    res.status(500).json({ message: "Failed to update wishlist", error: error.message });
+    const errorResponse = require("../lib/errorResponse");
+    return errorResponse(res, "Failed to update wishlist", error, 500);
   }
 };
 
@@ -72,6 +74,7 @@ exports.removeFromWishlist = async (req, res) => {
     const wishlist = (updatedUser.wishlist || []).map(formatService);
     res.status(200).json({ message: "Removed from wishlist", wishlist });
   } catch (error) {
-    res.status(500).json({ message: "Failed to remove from wishlist", error: error.message });
+    const errorResponse = require("../lib/errorResponse");
+    return errorResponse(res, "Failed to remove from wishlist", error, 500);
   }
 };

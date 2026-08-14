@@ -57,7 +57,8 @@ exports.createOrder = async (req, res) => {
 
     res.status(201).json({ message: "Order placed successfully", order });
   } catch (error) {
-    res.status(500).json({ message: "Failed to place order", error: error.message });
+    const errorResponse = require("../lib/errorResponse");
+    return errorResponse(res, "Failed to place order", error, 500);
   }
 };
 
@@ -66,6 +67,7 @@ exports.getUserOrders = async (req, res) => {
     const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
     res.status(200).json(orders);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch orders", error: error.message });
+    const errorResponse = require("../lib/errorResponse");
+    return errorResponse(res, "Failed to fetch orders", error, 500);
   }
 };

@@ -52,7 +52,8 @@ exports.register = async (req, res) => {
       user: { id: user._id, name: user.name, email: user.email, cart: [], wishlist: [] },
     });
   } catch (error) {
-    res.status(500).json({ message: "Registration failed", error: error.message });
+    const errorResponse = require("../lib/errorResponse");
+    return errorResponse(res, "Registration failed", error, 500);
   }
 };
 
@@ -88,7 +89,8 @@ exports.login = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Login failed", error: error.message });
+    const errorResponse = require("../lib/errorResponse");
+    return errorResponse(res, "Login failed", error, 500);
   }
 };
 
@@ -108,6 +110,7 @@ exports.getMe = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching user", error: error.message });
+    const errorResponse = require("../lib/errorResponse");
+    return errorResponse(res, "Error fetching user", error, 500);
   }
 };
