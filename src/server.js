@@ -14,13 +14,18 @@ const orderRoutes = require("./routes/db/orderRoute");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Enforce JWT_SECRET requirement
+if (!process.env.JWT_SECRET) {
+  if (process.env.NODE_ENV === 'production') {
+    console.error("FATAL ERROR: JWT_SECRET environment variable must be set in production.");
+    process.exit(1);
+  } else {
+    console.warn("WARNING: JWT_SECRET is not set. Using a development fallback is insecure in production.");
+  }
+}
+
 app.use(cors());
 app.use(express.json());
-
-// Warn when JWT_SECRET is not configured. In production, set this to a strong secret.
-if (!process.env.JWT_SECRET) {
-  console.warn("WARNING: JWT_SECRET is not set. Using a development fallback is insecure in production.");
-}
 
 // Security middleware
 app.use(helmet());
