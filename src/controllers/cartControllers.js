@@ -1,20 +1,23 @@
 const User = require("../models/User");
 const Service = require("../models/Service");
 
-const formatService = (s) => ({
-  id: s._id.toString(),
-  _id: s._id,
-  name: s.name,
-  category: s.category,
-  description: s.description,
-  price: s.price,
-  originalPrice: s.originalPrice,
-  priceUnit: s.priceUnit,
-  rating: s.rating,
-  reviewCount: s.reviewCount,
-  image: s.image,
-  tags: s.tags,
-});
+const formatService = (s) => {
+  if (!s || !s._id) return null;
+  return {
+    id: s._id.toString(),
+    _id: s._id,
+    name: s.name,
+    category: s.category,
+    description: s.description,
+    price: s.price,
+    originalPrice: s.originalPrice,
+    priceUnit: s.priceUnit,
+    rating: s.rating,
+    reviewCount: s.reviewCount,
+    image: s.image,
+    tags: s.tags,
+  };
+};
 
 exports.getCart = async (req, res) => {
   try {
@@ -22,7 +25,7 @@ exports.getCart = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const cart = (user.cart || []).map(formatService);
+    const cart = (user.cart || []).map(formatService).filter(Boolean);
     res.status(200).json(cart);
   } catch (error) {
     const errorResponse = require("../lib/errorResponse");
@@ -43,14 +46,14 @@ exports.addToCart = async (req, res) => {
     }
 
     const user = await User.findById(req.user._id);
-    const exists = user.cart.some((id) => id.toString() === service._id.toString());
+    const exists = user.cart.some((id) => id && id.toString() === service._id.toString());
     if (!exists) {
       user.cart.push(service._id);
       await user.save();
     }
 
     const updatedUser = await User.findById(req.user._id).populate("cart");
-    const cart = (updatedUser.cart || []).map(formatService);
+    const cart = (updatedUser.cart || []).map(formatService).filter(Boolean);
     res.status(200).json({ message: "Added to cart", cart });
   } catch (error) {
     const errorResponse = require("../lib/errorResponse");
@@ -63,11 +66,11 @@ exports.removeFromCart = async (req, res) => {
     const { serviceId } = req.params;
     const user = await User.findById(req.user._id);
 
-    user.cart = user.cart.filter((id) => id.toString() !== serviceId);
+    user.cart = user.cart.filter((id) => id && id.toString() !== serviceId);
     await user.save();
 
     const updatedUser = await User.findById(req.user._id).populate("cart");
-    const cart = (updatedUser.cart || []).map(formatService);
+    const cart = (updatedUser.cart || []).map(formatService).filter(Boolean);
     res.status(200).json({ message: "Removed from cart", cart });
   } catch (error) {
     const errorResponse = require("../lib/errorResponse");
