@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -24,7 +25,20 @@ if (!process.env.JWT_SECRET) {
   }
 }
 
-app.use(cors());
+// CORS setup
+if (process.env.NODE_ENV === 'production' && process.env.ALLOWED_ORIGINS) {
+  const allowed = process.env.ALLOWED_ORIGINS.split(',').map((s) => s.trim());
+  app.use(cors({ origin: (origin, callback) => {
+    if (!origin || allowed.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed'));
+    }
+  }}));
+} else {
+  app.use(cors());
+}
+
 app.use(express.json());
 
 // Security middleware
@@ -38,18 +52,6 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 app.use(limiter);
-
-// Restrict CORS origins in production via ALLOWED_ORIGINS env var (comma-separated)
-if (process.env.NODE_ENV === 'production' && process.env.ALLOWED_ORIGINS) {
-  const allowed = process.env.ALLOWED_ORIGINS.split(',').map((s) => s.trim());
-  app.use(cors({ origin: (origin, callback) => {
-    if (!origin || allowed.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS not allowed'));
-    }
-  }}));
-}
 
 app.get("/", (req, res) => {
   res.json({ message: "Event Ease backend is running" });
