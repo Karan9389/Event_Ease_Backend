@@ -1,20 +1,23 @@
 const User = require("../models/User");
 const Service = require("../models/Service");
 
-const formatService = (s) => ({
-  id: s._id.toString(),
-  _id: s._id,
-  name: s.name,
-  category: s.category,
-  description: s.description,
-  price: s.price,
-  originalPrice: s.originalPrice,
-  priceUnit: s.priceUnit,
-  rating: s.rating,
-  reviewCount: s.reviewCount,
-  image: s.image,
-  tags: s.tags,
-});
+const formatService = (s) => {
+  if (!s || !s._id) return null;
+  return {
+    id: s._id.toString(),
+    _id: s._id,
+    name: s.name,
+    category: s.category,
+    description: s.description,
+    price: s.price,
+    originalPrice: s.originalPrice,
+    priceUnit: s.priceUnit,
+    rating: s.rating,
+    reviewCount: s.reviewCount,
+    image: s.image,
+    tags: s.tags,
+  };
+};
 
 exports.getWishlist = async (req, res) => {
   try {
@@ -22,7 +25,7 @@ exports.getWishlist = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    const wishlist = (user.wishlist || []).map(formatService);
+    const wishlist = (user.wishlist || []).map(formatService).filter(Boolean);
     res.status(200).json(wishlist);
   } catch (error) {
     const errorResponse = require("../lib/errorResponse");
@@ -43,7 +46,7 @@ exports.toggleWishlist = async (req, res) => {
     }
 
     const user = await User.findById(req.user._id);
-    const existsIndex = user.wishlist.findIndex((id) => id.toString() === serviceId);
+    const existsIndex = user.wishlist.findIndex((id) => id && id.toString() === serviceId);
 
     if (existsIndex > -1) {
       user.wishlist.splice(existsIndex, 1);
@@ -54,7 +57,7 @@ exports.toggleWishlist = async (req, res) => {
     await user.save();
 
     const updatedUser = await User.findById(req.user._id).populate("wishlist");
-    const wishlist = (updatedUser.wishlist || []).map(formatService);
+    const wishlist = (updatedUser.wishlist || []).map(formatService).filter(Boolean);
     res.status(200).json({ message: "Wishlist updated", wishlist });
   } catch (error) {
     const errorResponse = require("../lib/errorResponse");
@@ -67,11 +70,11 @@ exports.removeFromWishlist = async (req, res) => {
     const { serviceId } = req.params;
     const user = await User.findById(req.user._id);
 
-    user.wishlist = user.wishlist.filter((id) => id.toString() !== serviceId);
+    user.wishlist = user.wishlist.filter((id) => id && id.toString() !== serviceId);
     await user.save();
 
     const updatedUser = await User.findById(req.user._id).populate("wishlist");
-    const wishlist = (updatedUser.wishlist || []).map(formatService);
+    const wishlist = (updatedUser.wishlist || []).map(formatService).filter(Boolean);
     res.status(200).json({ message: "Removed from wishlist", wishlist });
   } catch (error) {
     const errorResponse = require("../lib/errorResponse");
