@@ -25,10 +25,11 @@ exports.createOrder = async (req, res) => {
     } else {
       // If items not sent, fetch from user's current cart
       const user = await User.findById(req.user._id).populate("cart");
-      if (!user.cart || user.cart.length === 0) {
+      const validCart = (user.cart || []).filter((item) => item && item._id);
+      if (validCart.length === 0) {
         return res.status(400).json({ message: "Cart is empty" });
       }
-      orderItems = user.cart.map((item) => ({
+      orderItems = validCart.map((item) => ({
         service: item._id,
         name: item.name,
         category: item.category,
