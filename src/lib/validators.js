@@ -47,13 +47,10 @@ const createServiceSchema = Joi.object({
     'number.positive': 'Price must be a positive number',
     'any.required': 'Price is required',
   }),
-  priceUnit: Joi.string().valid('per_event', 'per_hour', 'per_person').required().messages({
-    'any.only': 'Price unit must be per_event, per_hour, or per_person',
-    'any.required': 'Price unit is required',
-  }),
-  location: Joi.string().max(100).allow(''),
-  image: Joi.string().uri().allow(''),
-  tags: Joi.array().items(Joi.string()).allow([]),
+  priceUnit: Joi.string().allow('', null).optional(),
+  location: Joi.string().max(100).allow('', null).optional(),
+  image: Joi.string().allow('', null).optional(),
+  tags: Joi.array().items(Joi.string()).default([]),
 });
 
 const updateServiceSchema = Joi.object({
@@ -61,10 +58,10 @@ const updateServiceSchema = Joi.object({
   category: Joi.string().min(2).max(50),
   description: Joi.string().min(10).max(1000),
   price: Joi.number().positive(),
-  priceUnit: Joi.string().valid('per_event', 'per_hour', 'per_person'),
-  location: Joi.string().max(100).allow(''),
-  image: Joi.string().uri().allow(''),
-  tags: Joi.array().items(Joi.string()).allow([]),
+  priceUnit: Joi.string().allow('', null).optional(),
+  location: Joi.string().max(100).allow('', null).optional(),
+  image: Joi.string().allow('', null).optional(),
+  tags: Joi.array().items(Joi.string()).default([]),
 });
 
 // Validation middleware factory
