@@ -1,31 +1,31 @@
-# ðŸŒŸ EventEasy
+# Ã°Å¸Å’Å¸ EventEasy
 
 ### A secure REST API for discovering event vendors, managing selections, and placing event bookings.
 
 EventEasy is a decoupled event-planning platform. This repository contains the Node.js/Express backend that powers authentication, vendor services, carts, wishlists, and booking orders for the EventEasy web client.
 
-## ðŸ”— System Architecture & Companion Repository
+## Ã°Å¸â€â€” System Architecture & Companion Repository
 
 EventEasy uses a **decoupled client-server architecture**:
 
 ```text
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”       HTTPS/REST + JSON       â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ EventEasy Frontend           â”‚ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¶ â”‚ EventEasy Backend            â”‚
-â”‚ React + TypeScript + Vite    â”‚ â—€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ â”‚ Express + Node.js            â”‚
-â”‚ localhost:3000               â”‚                               â”‚ localhost:5000               â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜                               â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                                                                              â”‚ Mongoose
-                                                                              â–¼
-                                                                  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-                                                                  â”‚ MongoDB                  â”‚
-                                                                  â”‚ event_ease database      â”‚
-                                                                  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+Ã¢â€Å’Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â       HTTPS/REST + JSON       Ã¢â€Å’Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â
+Ã¢â€â€š EventEasy Frontend           Ã¢â€â€š Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€“Â¶ Ã¢â€â€š EventEasy Backend            Ã¢â€â€š
+Ã¢â€â€š React + TypeScript + Vite    Ã¢â€â€š Ã¢â€”â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Ã¢â€â€š Express + Node.js            Ã¢â€â€š
+Ã¢â€â€š localhost:3000               Ã¢â€â€š                               Ã¢â€â€š localhost:5000               Ã¢â€â€š
+Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Ëœ                               Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Ëœ
+                                                                              Ã¢â€â€š Mongoose
+                                                                              Ã¢â€“Â¼
+                                                                  Ã¢â€Å’Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Â
+                                                                  Ã¢â€â€š MongoDB                  Ã¢â€â€š
+                                                                  Ã¢â€â€š event_ease database      Ã¢â€â€š
+                                                                  Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€Ëœ
 ```
 
 - **Frontend repository:** [EventEasy Frontend](https://github.com/Karan9389/Event_Ease)
-- **Backend repository:** [EventEasy Backend](https://github.com/Karan9389/Event_Ease_Backend) â€” this repository
+- **Backend repository:** [EventEasy Backend](https://github.com/Karan9389/Event_Ease_Backend) Ã¢â‚¬â€ this repository
 
-The frontend calls the backend under `http://localhost:5000/api` during local development. Public service discovery endpoints are unauthenticated. User-specific routes require a JWT in the `Authorization` header using the `Bearer JWT` scheme. The frontend stores that token in `localStorage` under `event_ease_token`.
+The frontend calls the backend under `http://localhost:5000/api` during local development. Public service discovery endpoints are unauthenticated. User-specific routes require a JWT credential in the `Authorization` header. The frontend stores that token in `localStorage` under `event_ease_token`.
 
 The backend enables CORS for local development. In production, set `ALLOWED_ORIGINS` to a comma-separated allowlist of deployed frontend origins. Express JSON parsing, Helmet security headers, a global rate limiter, Joi request validation, bcrypt password hashing, and centralized error responses are applied at the API boundary.
 
@@ -50,25 +50,25 @@ The backend enables CORS for local development. In production, set `ALLOWED_ORIG
 
 For the client-side pages and user experience that consume this API, see the [frontend README](https://github.com/Karan9389/Event_Ease#readme).
 
-## ðŸ›  Tech Stack & Configuration
+## Ã°Å¸â€ºÂ  Tech Stack & Configuration
 
 ### Runtime and server
 
-- **Node.js** â€” JavaScript runtime
-- **Express 5** â€” HTTP server and routing
-- **CommonJS** â€” module format used by the backend
-- **MongoDB** â€” document database
-- **Mongoose 9** â€” MongoDB connection, schemas, models, and population
+- **Node.js** Ã¢â‚¬â€ JavaScript runtime
+- **Express 5** Ã¢â‚¬â€ HTTP server and routing
+- **CommonJS** Ã¢â‚¬â€ module format used by the backend
+- **MongoDB** Ã¢â‚¬â€ document database
+- **Mongoose 9** Ã¢â‚¬â€ MongoDB connection, schemas, models, and population
 
 ### Security, validation, and middleware
 
-- **jsonwebtoken** â€” seven-day JWT creation and verification
-- **bcryptjs** â€” password hashing and comparison
-- **Joi** â€” request-body validation and unknown-field stripping
-- **cors** â€” cross-origin access control
-- **helmet** â€” security-related HTTP headers
-- **express-rate-limit** â€” global limit of 100 requests per IP per 15 minutes
-- **dotenv** â€” environment variable loading
+- **jsonwebtoken** Ã¢â‚¬â€ seven-day JWT creation and verification
+- **bcryptjs** Ã¢â‚¬â€ password hashing and comparison
+- **Joi** Ã¢â‚¬â€ request-body validation and unknown-field stripping
+- **cors** Ã¢â‚¬â€ cross-origin access control
+- **helmet** Ã¢â‚¬â€ security-related HTTP headers
+- **express-rate-limit** Ã¢â‚¬â€ global limit of 100 requests per IP per 15 minutes
+- **dotenv** Ã¢â‚¬â€ environment variable loading
 
 ### Environment variables
 
@@ -84,11 +84,11 @@ Create `Event_Ease_Backend/.env` locally. Never commit real secrets.
 
 The frontend currently has no required environment keys: its `.env.example` is empty and its API base URL is defined in `src/lib/api.ts` as `http://localhost:5000/api`. For a deployed frontend, update that API base URL to the deployed backend origin or introduce a Vite `VITE_*` variable as part of the deployment configuration.
 
-## ðŸ—„ Database Schema & Models
+## Ã°Å¸â€”â€ž Database Schema & Models
 
 EventEasy uses MongoDB with Mongoose. MongoDB creates the collections from the following models; Mongoose timestamps add `createdAt` and `updatedAt` to each top-level document.
 
-### `users` â€” `User`
+### `users` Ã¢â‚¬â€ `User`
 
 - `_id`: ObjectId
 - `name`: required trimmed string
@@ -98,7 +98,7 @@ EventEasy uses MongoDB with Mongoose. MongoDB creates the collections from the f
 - `wishlist`: array of ObjectId references to `Service`
 - `createdAt`, `updatedAt`
 
-### `services` â€” `Service`
+### `services` Ã¢â‚¬â€ `Service`
 
 - `_id`: ObjectId
 - `name`: required trimmed string
@@ -116,7 +116,7 @@ EventEasy uses MongoDB with Mongoose. MongoDB creates the collections from the f
 - `featured`: boolean
 - `createdAt`, `updatedAt`
 
-### `orders` â€” `Order`
+### `orders` Ã¢â‚¬â€ `Order`
 
 - `_id`: ObjectId
 - `user`: required ObjectId reference to `User`
@@ -135,40 +135,40 @@ EventEasy uses MongoDB with Mongoose. MongoDB creates the collections from the f
 
 1. A `User` references selected `Service` documents through `cart` and `wishlist`.
 2. Login and `/api/auth/me` populate those references before returning client-ready service objects.
-3. Creating an order records the selected services as embedded snapshots, associates the order with the authenticated user, calculates totals, and clears the userâ€™s cart.
+3. Creating an order records the selected services as embedded snapshots, associates the order with the authenticated user, calculates totals, and clears the userÃ¢â‚¬â„¢s cart.
 4. Services are seeded on startup only when the `services` collection is empty. The seed includes photography, catering, music, and makeup vendors.
 
-## ðŸ“‚ Project Structure & Working
+## Ã°Å¸â€œâ€š Project Structure & Working
 
 ```text
 Event_Ease_Backend/
-â”œâ”€â”€ package.json
-â”œâ”€â”€ .env                         # Local secrets and connection configuration (not committed)
-â””â”€â”€ src/
-    â”œâ”€â”€ server.js                # Express app, middleware, routes, MongoDB startup
-    â”œâ”€â”€ config/
-    â”‚   â””â”€â”€ seed.js              # Default service/vendor seed data
-    â”œâ”€â”€ controllers/
-    â”‚   â”œâ”€â”€ authControllers.js   # Register, login, current-user lookup
-    â”‚   â”œâ”€â”€ serviceControllers.js # Service search, lookup, and creation
-    â”‚   â”œâ”€â”€ cartControllers.js
-    â”‚   â”œâ”€â”€ wishlistControllers.js
-    â”‚   â””â”€â”€ orderControllers.js
-    â”œâ”€â”€ lib/
-    â”‚   â”œâ”€â”€ errorResponse.js     # Consistent server-error responses
-    â”‚   â””â”€â”€ validators.js        # Joi schemas and validation middleware
-    â”œâ”€â”€ middleware/
-    â”‚   â””â”€â”€ authMiddleware.js    # Bearer-token verification and user loading
-    â”œâ”€â”€ models/
-    â”‚   â”œâ”€â”€ User.js
-    â”‚   â”œâ”€â”€ Service.js
-    â”‚   â””â”€â”€ Order.js
-    â””â”€â”€ routes/db/
-        â”œâ”€â”€ authRoute.js
-        â”œâ”€â”€ serviceRoute.js
-        â”œâ”€â”€ cartRoute.js
-        â”œâ”€â”€ wishlistRoute.js
-        â””â”€â”€ orderRoute.js
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ package.json
+Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ .env                         # Local secrets and connection configuration (not committed)
+Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ src/
+    Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ server.js                # Express app, middleware, routes, MongoDB startup
+    Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ config/
+    Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ seed.js              # Default service/vendor seed data
+    Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ controllers/
+    Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ authControllers.js   # Register, login, current-user lookup
+    Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ serviceControllers.js # Service search, lookup, and creation
+    Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ cartControllers.js
+    Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ wishlistControllers.js
+    Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ orderControllers.js
+    Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ lib/
+    Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ errorResponse.js     # Consistent server-error responses
+    Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ validators.js        # Joi schemas and validation middleware
+    Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ middleware/
+    Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ authMiddleware.js    # Bearer-token verification and user loading
+    Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ models/
+    Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ User.js
+    Ã¢â€â€š   Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ Service.js
+    Ã¢â€â€š   Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ Order.js
+    Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ routes/db/
+        Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ authRoute.js
+        Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ serviceRoute.js
+        Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ cartRoute.js
+        Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ wishlistRoute.js
+        Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ orderRoute.js
 ```
 
 ### Request and data flow
@@ -176,14 +176,14 @@ Event_Ease_Backend/
 1. The React router renders a page such as Home, Cart, Wishlist, or Profile.
 2. The frontend API helper sends a JSON request to the matching `/api` route.
 3. Express applies CORS, JSON parsing, Helmet, and rate limiting.
-4. Protected routes run `authMiddleware`, which verifies the Bearer JWT and loads the user without the password.
+4. Protected routes run `authMiddleware`, which verifies the JWT and loads the user without the password.
 5. Joi validates and sanitizes supported request bodies where configured.
 6. A controller queries or updates MongoDB through Mongoose models.
 7. Mongoose populates service references when the response needs complete vendor data.
 8. The controller returns JSON; the frontend updates `AppContext` state for vendors, authentication, cart, wishlist, and orders.
 9. If service discovery cannot reach the backend, the frontend can fall back to its bundled mock vendor data. Authenticated mutations do not silently replace backend persistence.
 
-## ðŸš€ Getting Started & Local Setup
+## Ã°Å¸Å¡â‚¬ Getting Started & Local Setup
 
 ### Prerequisites
 
@@ -255,7 +255,7 @@ Frontend:
 | `npm run preview` | Serves the built Vite bundle locally. |
 | `npm run lint` | Runs the TypeScript compiler in no-emit mode. |
 
-## ðŸ‘¨â€ðŸ’» Maintainer
+## Ã°Å¸â€˜Â¨Ã¢â‚¬ÂÃ°Å¸â€™Â» Maintainer
 
-**Karan Kumar** Â· [GitHub](https://github.com/Karan9389)
+**Karan Kumar** Ã‚Â· [GitHub](https://github.com/Karan9389)
 
