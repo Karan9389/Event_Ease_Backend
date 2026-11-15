@@ -15,26 +15,31 @@ const orderRoutes = require("./routes/db/orderRoute");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Enforce JWT_SECRET requirement
-if (!process.env.JWT_SECRET) {
-  if (process.env.NODE_ENV === 'production') {
-    console.error("FATAL ERROR: JWT_SECRET environment variable must be set in production.");
-    process.exit(1);
-  } else {
-    console.warn("WARNING: JWT_SECRET is not set. Using a development fallback is insecure in production.");
-  }
+if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET environment variable must be set in production.");
 }
 
-// CORS setup
-if (process.env.NODE_ENV === 'production' && process.env.ALLOWED_ORIGINS) {
-  const allowed = process.env.ALLOWED_ORIGINS.split(',').map((s) => s.trim());
-  app.use(cors({ origin: (origin, callback) => {
-    if (!origin || allowed.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS not allowed'));
-    }
-  }}));
+if (!process.env.JWT_SECRET) {
+  console.warn("WARNING: JWT_SECRET is not set. A development fallback will be used.");
+}
+
+if (process.env.NODE_ENV === "production" && !process.env.ALLOWED_ORIGINS) {
+  throw new Error("ALLOWED_ORIGINS must be set in production.");
+}
+
+if (process.env.NODE_ENV === "production") {
+  const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim()).filter(Boolean);
+  if (allowedOrigins.length === 0) {
+    throw new Error("ALLOWED_ORIGINS must include at least one frontend origin.");
+  }
+  app.use(cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("CORS not allowed"));
+    },
+  }));
 } else {
   app.use(cors());
 }
@@ -63,18 +68,6 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/orders", orderRoutes);
 
-mongoose
-  .connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/event_ease")
-  .then(() => {
-    console.log("MongoDB connected");
-    seedDatabase();
-  })
-  .catch((error) => console.error("MongoDB connection error:", error.message));
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
 // Centralized error handler to avoid leaking internal details
 const errorResponse = require("./lib/errorResponse");
 app.use((err, req, res, next) => {
@@ -85,3 +78,30 @@ app.use((err, req, res, next) => {
   }
   return errorResponse(res, 'Internal server error', err, 500);
 });
+
+async function startServer() {
+  try {
+    await mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/event_ease");
+    console.log("MongoDB connected");
+    await seedDatabase();
+    return await new Promise((resolve, reject) => {
+      const server = app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+        resolve(server);
+      });
+      server.once("error", reject);
+    });
+  } catch (error) {
+    await mongoose.disconnect();
+    throw error;
+  }
+}
+
+if (require.main === module) {
+  startServer().catch((error) => {
+    console.error("Server startup failed:", error.message);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { app, startServer };
