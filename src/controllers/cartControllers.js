@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const Service = require("../models/Service");
+const mongoose = require("mongoose");
 
 const formatService = (s) => {
   if (!s || !s._id) return null;
@@ -39,6 +40,9 @@ exports.addToCart = async (req, res) => {
     if (!serviceId) {
       return res.status(400).json({ message: "serviceId is required" });
     }
+    if (!mongoose.Types.ObjectId.isValid(serviceId)) {
+      return res.status(400).json({ message: "Invalid service ID" });
+    }
 
     const service = await Service.findById(serviceId);
     if (!service) {
@@ -46,6 +50,9 @@ exports.addToCart = async (req, res) => {
     }
 
     const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
     const exists = user.cart.some((id) => id && id.toString() === service._id.toString());
     if (!exists) {
       user.cart.push(service._id);
@@ -64,7 +71,13 @@ exports.addToCart = async (req, res) => {
 exports.removeFromCart = async (req, res) => {
   try {
     const { serviceId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(serviceId)) {
+      return res.status(400).json({ message: "Invalid service ID" });
+    }
     const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     user.cart = user.cart.filter((id) => id && id.toString() !== serviceId);
     await user.save();
@@ -81,6 +94,9 @@ exports.removeFromCart = async (req, res) => {
 exports.clearCart = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
     user.cart = [];
     await user.save();
     res.status(200).json({ message: "Cart cleared", cart: [] });
