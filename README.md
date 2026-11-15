@@ -27,9 +27,15 @@ MongoDB
 - Frontend: [EventEasy Frontend](https://github.com/Karan9389/Event_Ease)
 - Backend: [EventEasy Backend](https://github.com/Karan9389/Event_Ease_Backend) (this repository)
 
-The frontend communicates with this backend through JSON REST endpoints. Public service discovery endpoints do not require authentication. User-specific endpoints require a JWT in the `Authorization` header. The frontend stores the token in browser local storage using the key `event_ease_token`.
+The frontend communicates with this backend through JSON REST endpoints. Public service discovery endpoints do not require authentication. User-specific endpoints require a JWT in the `Authorization` header. The frontend stores the token in browser local storage using the key `event_ease_token` and sends it in the `Bearer <token>` format.
 
 The backend allows cross-origin requests during development. In production, set `ALLOWED_ORIGINS` to a comma-separated list of trusted frontend origins.
+
+## Recent fixes
+
+- Corrected the API contract for authenticated requests so the client sends valid Bearer tokens.
+- Kept JWT signing strict by requiring `JWT_SECRET` in production and documenting the env configuration clearly.
+- Preserved cart/wishlist behavior when users toggle items or place orders without stale state from prior renders.
 
 ## API Endpoints
 
