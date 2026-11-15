@@ -113,6 +113,7 @@ const seedDatabase = async () => {
     }
   } catch (error) {
     console.error("Error seeding database:", error.message);
+    throw error;
   }
 };
 
