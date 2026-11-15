@@ -53,6 +53,9 @@ exports.register = async (req, res) => {
     });
   } catch (error) {
     const errorResponse = require("../lib/errorResponse");
+    if (error.code === 11000) {
+      return res.status(409).json({ message: "An account with this email already exists" });
+    }
     return errorResponse(res, "Registration failed", error, 500);
   }
 };
