@@ -1,88 +1,21 @@
-# EventEasy Backend
+# EventEase Backend
 
-REST API for discovering event vendors, managing user selections, and creating event bookings.
+Express 5 REST API for vendor discovery, user accounts, saved carts and wishlists, and event bookings. MongoDB data is managed with Mongoose.
 
-## System Architecture
+## Requirements and setup
 
-EventEasy is a decoupled client-server application:
+- Node.js 20 or newer
+- npm
+- MongoDB
 
-```text
-Browser
-  |
-  | REST API requests over JSON
-  v
-EventEasy Frontend (React, TypeScript, Vite)
-  |
-  | http://localhost:5000/api
-  v
-EventEasy Backend (Node.js, Express)
-  |
-  | Mongoose
-  v
-MongoDB
+```bash
+npm install
+npm start
 ```
 
-### Companion repositories
+The server connects to MongoDB and seeds the default vendors before it begins listening. Defaults are `http://localhost:5000` and `mongodb://127.0.0.1:27017/event_ease`.
 
-- Frontend: [EventEasy Frontend](https://github.com/Karan9389/Event_Ease)
-- Backend: [EventEasy Backend](https://github.com/Karan9389/Event_Ease_Backend) (this repository)
-
-The frontend communicates with this backend through JSON REST endpoints. Public service discovery endpoints do not require authentication. User-specific endpoints require a JWT in the `Authorization` header. The frontend stores the token in browser local storage using the key `event_ease_token` and sends it in the `Bearer <token>` format.
-
-The backend allows cross-origin requests during development. In production, set `ALLOWED_ORIGINS` to a comma-separated list of trusted frontend origins.
-
-## Recent fixes
-
-- Corrected the API contract for authenticated requests so the client sends valid Bearer tokens.
-- Kept JWT signing strict by requiring `JWT_SECRET` in production and documenting the env configuration clearly.
-- Preserved cart/wishlist behavior when users toggle items or place orders without stale state from prior renders.
-
-## API Endpoints
-
-| Area | Endpoint | Methods | Access |
-|---|---|---|---|
-| Health | `/` | GET | Public |
-| Authentication | `/api/auth/register` | POST | Public |
-| Authentication | `/api/auth/login` | POST | Public |
-| Authentication | `/api/auth/me` | GET | JWT required |
-| Services | `/api/services` | GET | Public |
-| Services | `/api/services/:id` | GET | Public |
-| Services | `/api/services` | POST | JWT required |
-| Cart | `/api/cart` | GET, POST | JWT required |
-| Cart | `/api/cart/clear` | DELETE | JWT required |
-| Cart | `/api/cart/:serviceId` | DELETE | JWT required |
-| Wishlist | `/api/wishlist` | GET | JWT required |
-| Wishlist | `/api/wishlist/toggle` | POST | JWT required |
-| Wishlist | `/api/wishlist/:serviceId` | DELETE | JWT required |
-| Orders | `/api/orders` | GET, POST | JWT required |
-
-## Technology Stack
-
-- Node.js
-- Express 5
-- MongoDB
-- Mongoose
-- JSON Web Tokens
-- bcryptjs
-- Joi
-- CORS
-- Helmet
-- express-rate-limit
-- dotenv
-
-## Environment Variables
-
-Create a `.env` file in the backend root. Do not commit real secrets.
-
-| Variable | Required | Description |
-|---|---|---|
-| `PORT` | No | HTTP port. Defaults to `5000`. |
-| `MONGO_URI` | No | MongoDB connection string. Defaults to `mongodb://127.0.0.1:27017/event_ease`. |
-| `JWT_SECRET` | Yes in production | Secret used to sign and verify authentication tokens. |
-| `NODE_ENV` | No | Use `production` to enable production CORS rules and strict JWT secret enforcement. |
-| `ALLOWED_ORIGINS` | Production | Comma-separated list of allowed frontend origins. |
-
-Example development configuration:
+Create a `.env` file in this directory to configure the server:
 
 ```dotenv
 PORT=5000
@@ -91,178 +24,55 @@ JWT_SECRET=replace-with-a-long-random-secret
 NODE_ENV=development
 ```
 
-The frontend currently uses `http://localhost:5000/api` directly in `src/lib/api.ts`. Its `.env.example` does not define any variables.
+In production, `JWT_SECRET` and `ALLOWED_ORIGINS` are required. Set `ALLOWED_ORIGINS` to a comma-separated list of exact frontend origins, for example:
 
-## Database Schema
-
-The application uses MongoDB collections managed through Mongoose.
-
-### Users
-
-Model: `User`
-
-- `_id`: MongoDB ObjectId
-- `name`: required string
-- `email`: required, unique, lowercased string
-- `password`: required bcrypt hash
-- `cart`: array of references to `Service`
-- `wishlist`: array of references to `Service`
-- `createdAt`
-- `updatedAt`
-
-### Services
-
-Model: `Service`
-
-- `_id`: MongoDB ObjectId
-- `name`: required string
-- `category`: `photography`, `catering`, `music`, or `makeup`
-- `description`: required string
-- `price`: required non-negative number
-- `originalPrice`: optional number
-- `priceUnit`: optional text such as `/pp` or `/ event`
-- `rating`: number from 0 to 5
-- `reviewCount`: non-negative number
-- `image`: image URL
-- `tags`: array of strings
-- `location`: location text
-- `availability`: availability text
-- `featured`: Boolean
-- `createdAt`
-- `updatedAt`
-
-### Orders
-
-Model: `Order`
-
-- `_id`: MongoDB ObjectId
-- `user`: reference to `User`
-- `items`: embedded order item snapshots
-- `items.service`: reference to `Service`
-- `items.name`: service name at checkout
-- `items.category`: service category at checkout
-- `items.price`: service price at checkout
-- `items.image`: service image at checkout
-- `subtotal`: sum of item prices
-- `tax`: 8 percent of the subtotal, rounded
-- `total`: subtotal plus tax
-- `eventName`: booking name
-- `eventDate`: booking date
-- `status`: `Planning`, `Confirmed`, `Completed`, or `Cancelled`
-- `createdAt`
-- `updatedAt`
-
-### Data relationships
-
-1. A user can reference many services in their cart.
-2. A user can reference many services in their wishlist.
-3. An order belongs to one user.
-4. An order stores service details as embedded snapshots so the booking remains readable if a service changes later.
-5. Creating an order clears the user's cart.
-
-When the server starts, the seed script inserts default vendors only if the services collection is empty.
-
-## Project Structure
-
-```text
-Event_Ease_Backend/
-|-- package.json
-|-- .env
-`-- src/
-    |-- server.js
-    |-- config/
-    |   `-- seed.js
-    |-- controllers/
-    |   |-- authControllers.js
-    |   |-- cartControllers.js
-    |   |-- orderControllers.js
-    |   |-- serviceControllers.js
-    |   `-- wishlistControllers.js
-    |-- lib/
-    |   |-- errorResponse.js
-    |   `-- validators.js
-    |-- middleware/
-    |   `-- authMiddleware.js
-    |-- models/
-    |   |-- Order.js
-    |   |-- Service.js
-    |   `-- User.js
-    `-- routes/db/
-        |-- authRoute.js
-        |-- cartRoute.js
-        |-- orderRoute.js
-        |-- serviceRoute.js
-        `-- wishlistRoute.js
+```dotenv
+NODE_ENV=production
+JWT_SECRET=use-a-long-random-secret-from-a-secret-manager
+ALLOWED_ORIGINS=https://events.example.com
 ```
 
-## Request Flow
+Do not commit real secrets.
 
-1. A frontend page calls a function in `src/lib/api.ts`.
-2. The browser sends a JSON request to the matching backend route.
-3. Express applies CORS, JSON parsing, Helmet, and rate limiting.
-4. Protected routes run JWT authentication middleware.
-5. Joi validates supported request bodies.
-6. Controllers read or update MongoDB through Mongoose models.
-7. The controller returns a JSON response.
-8. The frontend updates its React context and page state.
+## API
 
-The frontend can use bundled mock vendors if the public service request cannot reach the backend. Authenticated operations still require the backend for persistence.
+All endpoints exchange JSON. Protected endpoints require a JWT sent in an HTTP authentication header using the standard bearer-token scheme. Tokens are issued at registration and login and expire after seven days.
 
-## Getting Started
+| Endpoint | Methods | Access | Description |
+|---|---|---|---|
+| `/` | GET | Public | Health response |
+| `/api/auth/register` | POST | Public | Create an account |
+| `/api/auth/login` | POST | Public | Authenticate |
+| `/api/auth/me` | GET | JWT | Return the current user, cart, and wishlist |
+| `/api/services` | GET | Public | List/search services using optional `category`, `q`, and `location` query parameters |
+| `/api/services/:id` | GET | Public | Get one service |
+| `/api/services` | POST | JWT | Create a service |
+| `/api/cart` | GET, POST | JWT | Read the cart or add a service (`serviceId`) |
+| `/api/cart/clear` | DELETE | JWT | Clear the cart |
+| `/api/cart/:serviceId` | DELETE | JWT | Remove a service |
+| `/api/wishlist` | GET | JWT | Read the wishlist |
+| `/api/wishlist/toggle` | POST | JWT | Toggle a service (`serviceId`) |
+| `/api/wishlist/:serviceId` | DELETE | JWT | Remove a service |
+| `/api/orders` | GET | JWT | List the current user's bookings |
+| `/api/orders` | POST | JWT | Book the current cart |
 
-### Prerequisites
+### Booking request
 
-- Node.js 18 or newer
-- npm
-- MongoDB running locally or a reachable MongoDB instance
+Send optional event details; order items, names, and prices are loaded from the authenticated user's server-side cart:
 
-### Clone the repositories
-
-```bash
-git clone https://github.com/Karan9389/Event_Ease_Backend.git
-git clone https://github.com/Karan9389/Event_Ease.git
+```json
+{
+  "eventName": "Wedding Reception",
+  "eventDate": "2027-06-15"
+}
 ```
 
-### Install and run the backend
+`eventDate` must be a valid `YYYY-MM-DD` date and cannot be in the past. If omitted, the API assigns a default event name and a date 14 days ahead. The API calculates an 8% tax (rounded to the nearest whole unit), saves an item snapshot in the order, then clears the cart.
 
-```bash
-cd Event_Ease_Backend
-npm install
-npm start
-```
+## Data and startup
 
-The backend starts at `http://localhost:5000`.
+The `User` model stores account details and service references for cart and wishlist. `Service` stores category, description, pricing, availability, and display details. `Order` records the event details, status, calculated totals, and service snapshots. Default services are inserted only when the services collection is empty.
 
-### Install and run the frontend
+Run the backend's built-in request-validation tests with `npm test`.
 
-Open a second terminal:
-
-```bash
-cd Event_Ease
-npm install
-npm run dev
-```
-
-The frontend starts at `http://localhost:3000`.
-
-### Backend scripts
-
-| Command | Description |
-|---|---|
-| `npm start` | Starts `src/server.js`. |
-| `npm test` | Placeholder script; automated backend tests are not currently configured. |
-
-### Frontend scripts
-
-| Command | Description |
-|---|---|
-| `npm run dev` | Starts the Vite development server on port 3000. |
-| `npm run build` | Creates the production bundle. |
-| `npm run preview` | Serves the production bundle locally. |
-| `npm run lint` | Runs TypeScript validation without emitting files. |
-
-For the client-side application and UI details, see the [frontend README](https://github.com/Karan9389/Event_Ease#readme).
-
-## Maintainer
-
-Karan Kumar - [GitHub](https://github.com/Karan9389)
+For workspace setup and frontend instructions, see the [root README](../README.md) and [frontend README](../Event_Ease_Frontend/README.md).
