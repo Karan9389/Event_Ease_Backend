@@ -2,12 +2,12 @@ const Joi = require('joi');
 
 // Auth validation schemas
 const registerSchema = Joi.object({
-  name: Joi.string().min(2).max(100).required().messages({
+  name: Joi.string().trim().min(2).max(100).required().messages({
     'string.empty': 'Name is required',
     'string.min': 'Name must be at least 2 characters',
     'any.required': 'Name is required',
   }),
-  email: Joi.string().email().required().messages({
+  email: Joi.string().trim().email().lowercase().required().messages({
     'string.email': 'Valid email is required',
     'any.required': 'Email is required',
   }),
@@ -18,7 +18,7 @@ const registerSchema = Joi.object({
 });
 
 const loginSchema = Joi.object({
-  email: Joi.string().email().required().messages({
+  email: Joi.string().trim().email().lowercase().required().messages({
     'string.email': 'Valid email is required',
     'any.required': 'Email is required',
   }),
@@ -34,7 +34,7 @@ const createServiceSchema = Joi.object({
     'string.min': 'Service name must be at least 2 characters',
     'any.required': 'Service name is required',
   }),
-  category: Joi.string().min(2).max(50).required().messages({
+  category: Joi.string().lowercase().valid("photography", "catering", "music", "makeup").required().messages({
     'string.empty': 'Category is required',
     'any.required': 'Category is required',
   }),
@@ -43,25 +43,57 @@ const createServiceSchema = Joi.object({
     'string.max': 'Description must not exceed 1000 characters',
     'any.required': 'Description is required',
   }),
-  price: Joi.number().positive().required().messages({
-    'number.positive': 'Price must be a positive number',
+  price: Joi.number().min(0).required().messages({
+    'number.min': 'Price must be zero or more',
     'any.required': 'Price is required',
   }),
+  originalPrice: Joi.number().min(0).optional(),
+  rating: Joi.number().min(0).max(5).optional(),
+  reviewCount: Joi.number().integer().min(0).optional(),
   priceUnit: Joi.string().allow('', null).optional(),
   location: Joi.string().max(100).allow('', null).optional(),
-  image: Joi.string().allow('', null).optional(),
+  image: Joi.string().max(2000).allow('', null).optional(),
   tags: Joi.array().items(Joi.string()).default([]),
+  availability: Joi.string().max(100).optional(),
+  featured: Joi.boolean().optional(),
+});
+
+const createOrderSchema = Joi.object({
+  eventName: Joi.string().trim().min(2).max(100).optional(),
+  eventDate: Joi.string()
+    .pattern(/^\d{4}-\d{2}-\d{2}$/)
+    .custom((value, helpers) => {
+      const date = new Date(`${value}T00:00:00.000Z`);
+      if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value) {
+        return helpers.error('date.format');
+      }
+      if (value < new Date().toISOString().slice(0, 10)) {
+        return helpers.error('date.min');
+      }
+      return value;
+    })
+    .messages({
+      'string.pattern.base': 'Event date must use YYYY-MM-DD format',
+      'date.format': 'Event date must be a valid calendar date',
+      'date.min': 'Event date cannot be in the past',
+    })
+    .optional(),
 });
 
 const updateServiceSchema = Joi.object({
   name: Joi.string().min(2).max(100),
-  category: Joi.string().min(2).max(50),
+  category: Joi.string().lowercase().valid("photography", "catering", "music", "makeup"),
   description: Joi.string().min(10).max(1000),
-  price: Joi.number().positive(),
+  price: Joi.number().min(0),
+  originalPrice: Joi.number().min(0),
+  rating: Joi.number().min(0).max(5),
+  reviewCount: Joi.number().integer().min(0),
   priceUnit: Joi.string().allow('', null).optional(),
   location: Joi.string().max(100).allow('', null).optional(),
-  image: Joi.string().allow('', null).optional(),
+  image: Joi.string().max(2000).allow('', null).optional(),
   tags: Joi.array().items(Joi.string()).default([]),
+  availability: Joi.string().max(100),
+  featured: Joi.boolean(),
 });
 
 // Validation middleware factory
@@ -88,5 +120,6 @@ module.exports = {
   loginSchema,
   createServiceSchema,
   updateServiceSchema,
+  createOrderSchema,
   validateRequest,
 };
