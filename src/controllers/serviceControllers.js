@@ -1,4 +1,5 @@
 const Service = require("../models/Service");
+const mongoose = require("mongoose");
 
 // Escape regex metacharacters to avoid ReDoS and unintended patterns
 function escapeRegex(str) {
@@ -55,6 +56,9 @@ exports.getServices = async (req, res) => {
 
 exports.getServiceById = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: "Invalid service ID" });
+    }
     const service = await Service.findById(req.params.id);
     if (!service) {
       return res.status(404).json({ message: "Service not found" });
