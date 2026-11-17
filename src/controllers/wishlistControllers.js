@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const Service = require("../models/Service");
+const mongoose = require("mongoose");
 
 const formatService = (s) => {
   if (!s || !s._id) return null;
@@ -39,6 +40,9 @@ exports.toggleWishlist = async (req, res) => {
     if (!serviceId) {
       return res.status(400).json({ message: "serviceId is required" });
     }
+    if (!mongoose.Types.ObjectId.isValid(serviceId)) {
+      return res.status(400).json({ message: "Invalid service ID" });
+    }
 
     const service = await Service.findById(serviceId);
     if (!service) {
@@ -46,6 +50,9 @@ exports.toggleWishlist = async (req, res) => {
     }
 
     const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
     const existsIndex = user.wishlist.findIndex((id) => id && id.toString() === serviceId);
 
     if (existsIndex > -1) {
@@ -68,7 +75,13 @@ exports.toggleWishlist = async (req, res) => {
 exports.removeFromWishlist = async (req, res) => {
   try {
     const { serviceId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(serviceId)) {
+      return res.status(400).json({ message: "Invalid service ID" });
+    }
     const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
     user.wishlist = user.wishlist.filter((id) => id && id.toString() !== serviceId);
     await user.save();
