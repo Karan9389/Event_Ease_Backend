@@ -21,7 +21,7 @@ exports.createOrder = async (req, res) => {
       price: item.price,
       image: item.image || "",
     }));
-    const subtotal = orderItems.reduce((sum, i) => sum + i.price, 0);
+    const subtotal = Math.round(orderItems.reduce((sum, i) => sum + i.price, 0) * 100) / 100;
     const tax = Math.round(subtotal * 0.08);
     const total = subtotal + tax;
 
