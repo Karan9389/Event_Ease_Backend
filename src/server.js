@@ -68,6 +68,10 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/orders", orderRoutes);
 
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
+
 // Centralized error handler to avoid leaking internal details
 const errorResponse = require("./lib/errorResponse");
 app.use((err, req, res, next) => {
